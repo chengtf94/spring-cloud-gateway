@@ -41,7 +41,7 @@ public class RedisRateLimiter extends AbstractRateLimiter<RedisRateLimiter.Confi
 	public static final String CONFIGURATION_PROPERTY_NAME = "redis-rate-limiter";
 	public static final String REDIS_SCRIPT_NAME = "redisRequestRateLimiterScript";
 
-	/** 限流器头部信息名称：剩余令牌数、令牌生成速率、突发容量、每个请求消耗的令牌数 */
+	/** 限流器头部信息名称：剩余令牌数、令牌生成速率、突发容量（令牌桶容量）、每个请求消耗的令牌数 */
 	public static final String REMAINING_HEADER = "X-RateLimit-Remaining";
 	public static final String REPLENISH_RATE_HEADER = "X-RateLimit-Replenish-Rate";
 	public static final String BURST_CAPACITY_HEADER = "X-RateLimit-Burst-Capacity";
@@ -53,7 +53,7 @@ public class RedisRateLimiter extends AbstractRateLimiter<RedisRateLimiter.Confi
 	private AtomicBoolean initialized = new AtomicBoolean(false);
 	private Config defaultConfig;
 
-	/** 是否包含限流器头部信息、限流器头部信息名称：剩余令牌数、令牌生成速率、突发容量、每个请求消耗的令牌数 */
+	/** 是否包含限流器头部信息、限流器头部信息名称：剩余令牌数、令牌生成速率、突发容量（令牌桶容量）、每个请求消耗的令牌数 */
 	private boolean includeHeaders = true;
 	private String remainingHeader = REMAINING_HEADER;
 	private String replenishRateHeader = REPLENISH_RATE_HEADER;
@@ -103,7 +103,7 @@ public class RedisRateLimiter extends AbstractRateLimiter<RedisRateLimiter.Confi
 		// 根据路由ID加载配置
 		Config routeConfig = loadConfiguration(routeId);
 
-		// 获取令牌生成速率（每秒）、突发容量、每个请求消耗的令牌数
+		// 获取令牌生成速率（每秒）、突发容量（令牌桶容量）、每个请求消耗的令牌数
 		int replenishRate = routeConfig.getReplenishRate();
 		int burstCapacity = routeConfig.getBurstCapacity();
 		int requestedTokens = routeConfig.getRequestedTokens();
@@ -177,7 +177,7 @@ public class RedisRateLimiter extends AbstractRateLimiter<RedisRateLimiter.Confi
 	@Validated
 	public static class Config {
 
-		/** 令牌生成速率（每秒）、突发容量、每个请求消耗的令牌数 */
+		/** 令牌生成速率（每秒）、突发容量（令牌桶容量）、每个请求消耗的令牌数 */
 		@Min(1)
 		private int replenishRate;
 		@Min(0)
